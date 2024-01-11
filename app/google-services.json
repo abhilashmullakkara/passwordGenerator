@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "696694784776",
+    "firebase_url": "https://depopassword-default-rtdb.firebaseio.com",
+    "project_id": "depopassword",
+    "storage_bucket": "depopassword.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:696694784776:android:dd966d9145cb21cf5c22bd",
+        "android_client_info": {
+          "package_name": "com.abhilash.livedata"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAc6Pk0gI47_PYYRVd8Bxuph1MH4_3TzJM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:696694784776:android:139449bbec1083935c22bd",
+        "android_client_info": {
+          "package_name": "com.example.passwordgenerator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAc6Pk0gI47_PYYRVd8Bxuph1MH4_3TzJM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
