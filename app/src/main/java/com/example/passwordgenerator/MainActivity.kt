@@ -1,8 +1,6 @@
 package com.example.passwordgenerator
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,6 +72,21 @@ fun Greeting( modifier: Modifier = Modifier) {
         Text(text = "Password Generator")
 
     }
+        TextButton(onClick = {
+            val dataBase2 =
+                FirebaseDatabase.getInstance("https://depopassword-default-rtdb.firebaseio.com/")
+            val myRef2 = dataBase2.reference
+            dDepo=  frezememberGenerate()
+            myRef2.setValue(dDepo).addOnSuccessListener {
+                Toast.makeText(context, "Password uploaded Successfully", Toast.LENGTH_SHORT).show()
+            }.addOnFailureListener {
+                Toast.makeText(context, it.toString(), Toast.LENGTH_LONG).show()
+
+            }
+        }) {
+            Text(text = "Password Freezer")
+
+        }
         pass= passwordDownloader()
         Text("Password: $pass")
 //        val pass= test()
@@ -158,40 +170,18 @@ fun passwordDownloader(depoNumber: String = "0"): String {
 }
 
 
+fun frezememberGenerate(): MutableList<Depo> {
+    val dDepo= mutableListOf<Depo>()
+    for (i in 0 until 98) {
+        val depo = Depo()
+        depo.depoId = i.toString()
+        depo.password= "neofetch"
+        // println("Generated Password: ${depo.password}")
+        dDepo.add(depo)
+    }
+    return dDepo
+}
 
-//@Composable
-//fun passwordDownloader(depoNumber: String = "0"): String {
-//    var passwordResult by remember { mutableStateOf("") }
-//    val dataBase = FirebaseDatabase.getInstance("https://depopassword-default-rtdb.firebaseio.com/")
-//    val myRef = dataBase.reference
-//
-//    // Use a StringBuilder to efficiently append data
-//    // val data = StringBuilder()
-//    val data = StringBuffer()
-//    myRef.get().addOnSuccessListener { dataSnapshot ->
-//        if (dataSnapshot != null) {
-//            dataSnapshot.children.forEach { childSnapshot ->
-//               data.append("  " + childSnapshot.child("depoId").value)
-//                data.append("=    " + childSnapshot.child("password").value)
-//            }
-//            passwordResult = data.toString()
-//        }
-//
-//
-//        // After iterating through the data, update the passwordResult
-//        // Note: You may want to handle the StringBuilder differently based on your use case
-//      //  passwordResult = data.toString()
-//        if (passwordResult.isEmpty()) passwordResult = "nothingrecovered"
-//
-//        // Trigger a recomposition to reflect the updated passwordResult
-//        // (This depends on where this function is used)
-//
-//
-//        // This will return an empty string until the database operation is completed.
-//
-//    }
-//        return passwordResult
-//    }
 
 
 
