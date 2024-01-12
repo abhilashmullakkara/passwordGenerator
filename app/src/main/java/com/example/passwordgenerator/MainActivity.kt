@@ -6,7 +6,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -18,8 +23,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import com.example.passwordgenerator.ui.theme.PasswordGeneratorTheme
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -43,20 +51,56 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Greeting( modifier: Modifier = Modifier) {
     val context = LocalContext.current
+    var mesg by rememberSaveable {
+        mutableStateOf("")
+    }
     var pass by rememberSaveable {
         mutableStateOf("")
     }
     var dDepo: MutableList<Depo>
-    Column {
+    val scroll= rememberScrollState()
+    Column(modifier = Modifier.verticalScroll(scroll)) {
 
 
     Text(
         text = "Greetings!",
         modifier = modifier
     )
+        OutlinedTextField(value =mesg , onValueChange ={
+            mesg=it
+        },
+            placeholder = {
+                Text(
+                    text = "Version/mesg",
+                    color = Color.Black,
+                    fontSize = 14.sp
+                )
+            }
+            )
+        TextButton(onClick = {
+            val dataBase2 =
+                FirebaseDatabase.getInstance("https://depopassword-default-rtdb.firebaseio.com/")
+            val myRef2 = dataBase2.reference
+            dDepo= memberGenerate()
+            dDepo[0].depoId="0"
+            dDepo[0].password=mesg
+            myRef2.setValue(dDepo).addOnSuccessListener {
+                Toast.makeText(context, "Password uploaded Successfully", Toast.LENGTH_SHORT).show()
+            }.addOnFailureListener {
+                Toast.makeText(context, it.toString(), Toast.LENGTH_LONG).show()
+
+            }
+        }, colors =  ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF536DFE),
+            contentColor = Color.White
+        )) {
+            Text("LOAD")
+        }
+
     TextButton(onClick = {
         val dataBase2 =
             FirebaseDatabase.getInstance("https://depopassword-default-rtdb.firebaseio.com/")
@@ -72,6 +116,9 @@ fun Greeting( modifier: Modifier = Modifier) {
         Text(text = "Password Generator")
 
     }
+
+
+
         TextButton(onClick = {
             val dataBase2 =
                 FirebaseDatabase.getInstance("https://depopassword-default-rtdb.firebaseio.com/")
@@ -89,8 +136,6 @@ fun Greeting( modifier: Modifier = Modifier) {
         }
         pass= passwordDownloader()
         Text("Password: $pass")
-//        val pass= test()
-//        Text("Password from 0 th position: $pass")
 }
 
 }
@@ -119,6 +164,9 @@ fun generateRandomPassword(): String {
         uniqueChars.forEach { append(it) }
     }
 
+
+   
+
     return randomPassword
 }
 
@@ -126,11 +174,17 @@ fun memberGenerate(): MutableList<Depo> {
     val dDepo= mutableListOf<Depo>()
     for (i in 0 until 98) {
         val depo = Depo()
-        depo.depoId = i.toString()
-        depo.password= generateRandomPassword()
+        depo.depoId=i.toString()
+            depo.password=generateRandomPassword()
+
+
        // println("Generated Password: ${depo.password}")
+
         dDepo.add(depo)
+
     }
+    dDepo[0].depoId="0"
+    dDepo[0].password=""
     return dDepo
 }
 
@@ -152,7 +206,7 @@ fun passwordDownloader(depoNumber: String = "0"): String {
                     data.append("=    " + childSnapshot.child("password").value)
                 }
 
-                passwordResult = if (data.isNotEmpty()) data.toString() else "nothingrecovered"
+                passwordResult = if (data.isNotEmpty()) data.toString() else "..."
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -181,6 +235,13 @@ fun frezememberGenerate(): MutableList<Depo> {
     }
     return dDepo
 }
+
+
+fun isValidText(text: TextFieldValue): Boolean {
+    val allowedChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    return text.text.all { allowedChars.contains(it) }
+}
+    
 
 
 
